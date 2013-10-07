@@ -11,6 +11,7 @@
 
 (require 'auto-install)
 (require 'php-mode)
+
 (setq c-default-style "k&r"
           c-basic-offset 2)
 
@@ -50,7 +51,7 @@
 (setq make-backup-files nil)
 
 ;; Show trailing whitespace
-(setq show-trailing-whitespace 1)
+(setq-default show-trailing-whitespace 1)
 
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
