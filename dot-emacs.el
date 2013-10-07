@@ -172,3 +172,9 @@
 
 ;; remove trailing whitespace on save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; make font size changes global
+(defadvice text-scale-increase (around all-buffers (arg) activate)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      ad-do-it)))
