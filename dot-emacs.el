@@ -169,6 +169,8 @@
 
 ;; add sublime style file finding (Win/Cmd-f)
 (require 'projectile)
+(define-key projectile-mode-map [?\s-f] 'projectile-find-file)
+(projectile-global-mode)
 
 ;; remove trailing whitespace on save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -178,3 +180,6 @@
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       ad-do-it)))
+
+;; turn on line numbers
+(global-linum-mode)
