@@ -170,6 +170,7 @@
 ;; add sublime style file finding (Win/Cmd-f)
 (require 'projectile)
 (define-key projectile-mode-map [?\s-f] 'projectile-find-file)
+(define-key projectile-mode-map [f6] 'projectile-find-file)
 (projectile-global-mode)
 
 ;; remove trailing whitespace on save
