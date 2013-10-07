@@ -50,9 +50,6 @@
 ;; Don't do backups
 (setq make-backup-files nil)
 
-;; Show trailing whitespace
-(setq-default show-trailing-whitespace 1)
-
 ;; Use cperl-mode instead of the default perl-mode
 (defalias 'perl-mode 'cperl-mode)
 
@@ -109,11 +106,11 @@
 
 (interactive)
 
-(message 
+(message
 
  (if (let (window (get-buffer-window (current-buffer)))
 
-       (set-window-dedicated-p window 
+       (set-window-dedicated-p window
 
         (not (window-dedicated-p window))))
 
@@ -165,3 +162,10 @@
     (when indent
       (indent-line-to indent)
       (when (> offset 0) (forward-char offset)))))
+
+
+;; add sublime style file finding (Win/Cmd-f)
+(require 'projectile)
+
+;; remove trailing whitespace on save
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
