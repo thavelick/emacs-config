@@ -139,3 +139,28 @@
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
+;; in ruby, indent multiline method calls like this:
+;; foo(
+;;  :a => :b,
+;;  :c => :d
+;; )
+;; instead of
+;; foo(
+;;  :a => :b,
+;;  :c => :d
+;;  )
+;; From: https://gist.github.com/dgutov/1274520
+(defadvice ruby-indent-line (after unindent-closing-paren activate)
+  (let ((column (current-column))
+        indent offset)
+    (save-excursion
+      (back-to-indentation)
+      (let ((state (syntax-ppss)))
+        (setq offset (- column (current-column)))
+        (when (and (eq (char-after) ?\))
+                   (not (zerop (car state))))
+          (goto-char (cadr state))
+          (setq indent (current-indentation)))))
+    (when indent
+      (indent-line-to indent)
+      (when (> offset 0) (forward-char offset)))))
