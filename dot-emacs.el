@@ -184,3 +184,6 @@
 
 ;; turn on line numbers
 (global-linum-mode)
+
+;; show ruby syntax errors
+(require 'flymake-ruby)
