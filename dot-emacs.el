@@ -197,3 +197,7 @@
 
 ;; Enable Multe selection
 (require 'iedit)
+
+;; Select matching blocks in ruby
+(require 'ruby-block)
+(ruby-block-mode t)
