@@ -4,6 +4,7 @@
 (setq x-select-enable-clipboard t)
 
 (add-to-list 'load-path (expand-file-name "~/elisp"))
+(add-to-list 'load-path (expand-file-name "~/elisp/iedit"))
 
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
@@ -134,6 +135,11 @@
    (interactive "r")
    (align-regexp begin end "\\(\\s-*\\)=" 1 1 ))
 
+(defun align-to-colon (begin end)
+  "Align region to the furthest out colon"
+  (interactive "r")
+  (align-regexp begin end "\\(\\s-*\\):" 1 1 ))
+
 (global-set-key (kbd "C-=") 'align-to-equals)
 
 ;; yaml mode
@@ -187,3 +193,7 @@
 
 ;; show ruby syntax errors
 (require 'flymake-ruby)
+(add-hook 'ruby-mode-hook 'flymake-ruby-load)
+
+;; Enable Multe selection
+(require 'iedit)

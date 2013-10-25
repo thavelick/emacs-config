@@ -19,7 +19,7 @@
 (defconst flymake-ruby-err-line-patterns
   '(("^\\(.*\.rb\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3)))
 
-(defvar flymake-ruby-executable "ruby"
+(defvar flymake-ruby-executable "/Users/tristan/.rvm/bin/ruby-1.9.3-p448"
   "The ruby executable to use for syntax checking.")
 
 ;; Invoke ruby with '-c' to get syntax checking
