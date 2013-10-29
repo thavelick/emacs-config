@@ -201,3 +201,15 @@
 ;; Select matching blocks in ruby
 (require 'ruby-block)
 (ruby-block-mode t)
+
+;; Convert hashes between json and ruby
+
+(defun ruby-hash-to-json (&optional b e )
+  (interactive "r")
+  (shell-command-on-region b e (concat "ruby " (expand-file-name "~/elisp/") "hash_convert.rb" " --to-json") t t "*Error*" t)
+  (indent-region b e))
+
+(defun json-to-ruby-hash (&optional b e )
+  (interactive "r")
+  (shell-command-on-region b e (concat "ruby " (expand-file-name "~/elisp/") "hash_convert.rb" " --from-json") t t "*Error*" t)
+  (indent-region b e))
