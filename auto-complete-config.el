@@ -21,7 +21,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -465,7 +465,8 @@
 
 (defun ac-ruby-mode-setup ()
   (make-local-variable 'ac-ignores)
-  (add-to-list 'ac-ignores "end"))
+  (add-to-list 'ac-ignores "end")
+  (add-to-list 'ac-ignores "don"))
 
 (defun ac-css-mode-setup ()
   (setq ac-sources (append '(ac-source-css-property) ac-sources)))

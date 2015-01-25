@@ -25,7 +25,7 @@
 ;; Invoke ruby with '-c' to get syntax checking
 (defun flymake-ruby-command (filename)
   "Construct a command that flymake can use to check ruby source."
-  (list flymake-ruby-executable "-w" "-c" filename))
+  (list flymake-ruby-executable "-w" "-c" filename " 2>&1 | grep -v 'warning: possibly useless use of == in void context'"))
 
 ;;;###autoload
 (defun flymake-ruby-load ()
