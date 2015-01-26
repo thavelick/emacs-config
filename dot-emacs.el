@@ -8,6 +8,10 @@
 (add-to-list 'load-path (expand-file-name "~/elisp"))
 (add-to-list 'load-path (expand-file-name "~/elisp/iedit"))
 
+; Make mac paths carry over to emacs shells
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
 (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
