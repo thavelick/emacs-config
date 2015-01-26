@@ -12,6 +12,8 @@
 (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
 (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
 (require 'auto-install)
 (require 'php-mode)
 
@@ -142,8 +144,6 @@
   (interactive "r")
   (align-regexp begin end "\\(\\s-*\\):" 1 1 ))
 
-(global-set-key (kbd "C-=") 'align-to-equals)
-
 ;; yaml mode
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
@@ -253,6 +253,11 @@
   (interactive)
   (let ((project-root (expand-file-name(projectile-project-root))))
         (with-temp-buffer (shell-command (concat "cd " project-root " && ctags -e -R * -f " project-root "tags") t))))
+
+;; move between windows with M-<arrow>
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
+(windmove-default-keybindings 'meta)
 
 ;; Use the mouse in command line mode
 (require 'mouse)
