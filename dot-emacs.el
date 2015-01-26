@@ -263,6 +263,12 @@
   (windmove-default-keybindings))
 (windmove-default-keybindings 'meta)
 
+;; for some reason the above doesn't work on mac, so just bind the keys directly
+(global-set-key (kbd "M-<left>")  'windmove-left)
+(global-set-key (kbd "M-<right>") 'windmove-right)
+(global-set-key (kbd "M-<up>")    'windmove-up)
+(global-set-key (kbd "M-<down>")  'windmove-down)
+
 ;; Use the mouse in command line mode
 (require 'mouse)
 (xterm-mouse-mode t)
