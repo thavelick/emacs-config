@@ -1,24 +1,32 @@
+(server-start)
 (require 'package)
+
+; Fetch and install packaages
+(setq package-list '(exec-path-from-shell expand-region magit))
+
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
-;(server-start)
-(setq x-select-enable-clipboard t)
-
 (add-to-list 'load-path (expand-file-name "~/elisp"))
 (add-to-list 'load-path (expand-file-name "~/elisp/iedit"))
 
-; Make mac paths carry over to emacs shells
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+(package-initialize)
+
+(unless package-archive-contents
+  (package-refresh-contents))
+
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+
+(require 'auto-install)
+
+(setq x-select-enable-clipboard t)
 
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
 (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
-(require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
-(require 'auto-install)
 (require 'php-mode)
 
 (setq c-default-style "k&r"
@@ -258,11 +266,6 @@
   (let ((project-root (expand-file-name(projectile-project-root))))
         (with-temp-buffer (shell-command (concat "cd " project-root " && ctags -e -R * -f " project-root "tags") t))))
 
-;; move between windows with M-<arrow>
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings))
-(windmove-default-keybindings 'meta)
-
 ;; for some reason the above doesn't work on mac, so just bind the keys directly
 (global-set-key (kbd "M-<left>")  'windmove-left)
 (global-set-key (kbd "M-<right>") 'windmove-right)
@@ -272,3 +275,10 @@
 ;; make autoindent happen after newline
 (define-key global-map (kbd "RET") 'newline-and-indent)
 (define-key ruby-mode-map (kbd "RET") 'reindent-then-newline-and-indent)
+
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+
+; Make mac paths carry over to emacs shells
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
