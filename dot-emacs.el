@@ -288,3 +288,6 @@
   (require 'ag)
   (setq-default ag-highlight-search t)
   (global-set-key (kbd "M-?") 'ag-project))
+
+;; Undo for window rearranging
+(winner-mode 1)
