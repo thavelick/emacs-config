@@ -5,8 +5,8 @@
 
 (require 'package)
 
-; Fetch and install packaages
-(setq package-list '(exec-path-from-shell expand-region magit))
+;; Fetch and install packaages
+(setq package-list '(exec-path-from-shell expand-region magit ag))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -123,7 +123,7 @@
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
 
-; sticky buffers
+;; sticky buffers
 (defun toggle-window-dedicated ()
 
 "Toggle whether the current active window is dedicated or not"
@@ -283,6 +283,15 @@
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
-; Make mac paths carry over to emacs shells
+;; Make mac paths carry over to emacs shells
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
+
+;; setup ag
+(when (executable-find "ag")
+  (require 'ag)
+  (setq-default ag-highlight-search t)
+  (global-set-key (kbd "M-?") 'ag-project))
+
+;; Undo for window rearranging
+(winner-mode 1)
