@@ -1,4 +1,8 @@
+
+(load "server")
 (unless (server-running-p (server-start)))
+
+
 (require 'package)
 
 ; Fetch and install packaages
