@@ -295,3 +295,9 @@
 
 ;; Undo for window rearranging
 (winner-mode 1)
+
+;; Always use org-indent-mode
+(add-hook 'org-mode-hook
+          (function
+           (lambda ()
+             (org-indent-mode))))
