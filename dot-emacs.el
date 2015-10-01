@@ -311,3 +311,9 @@
 
 ;; Magit shortcut
 (global-set-key (kbd "C-M-g") 'magit-status)
+
+;; Always use org-indent-mode
+(add-hook 'org-mode-hook
+          (function
+           (lambda ()
+             (org-indent-mode))))
