@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(exec-path-from-shell expand-region magit ag))
+(setq package-list '(rvm robe exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -77,21 +77,27 @@
 ;; just spaces
 (setq-default indent-tabs-mode nil)
 (setq tab-width 2)
+(setq-default tab-width 2)
 (setq js-indent-level 2)
+(setq css-indent-offset 2)
 
 ;; Use 2 space indents via cperl mode
 
 (custom-set-variables
-  '(cperl-close-paren-offset -2)
-  '(cperl-continued-statement-offset 2)
-  '(cperl-indent-level 2)
-  '(cperl-indent-parens-as-block t)
-  '(cperl-tab-always-indent nil)
-  '(cperl-electric-parens t)
-  '(cperl-electric-keywords t)
-  '(abbrev-mode t)
-  '(cperl-brace-offset -2)
-)
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(abbrev-mode t t)
+ '(cperl-brace-offset -2)
+ '(cperl-close-paren-offset -2)
+ '(cperl-continued-statement-offset 2)
+ '(cperl-electric-keywords t)
+ '(cperl-electric-parens t)
+ '(cperl-indent-level 2)
+ '(cperl-indent-parens-as-block t)
+ '(cperl-tab-always-indent nil)
+ '(org-support-shift-select (quote always)))
 
 ;; Use classic style indentation
 ;;(global-set-key (kbd "<tab>") '(indent-rigidly 2))
@@ -215,6 +221,8 @@
 (require 'flymake-ruby)
 (add-hook 'ruby-mode-hook 'flymake-ruby-load)
 
+;; ruby code navigation
+(add-hook 'ruby-mode-hook 'robe-mode)
 ;; Enable Multe selection
 (require 'iedit)
 
@@ -252,8 +260,12 @@
 (menu-bar-mode 0)
 ;; Turn out the lights
 (custom-set-faces
-  '(default ((t (:background "black" :foreground "grey"))))
-  '(fringe ((t (:background "black")))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background "black" :foreground "grey"))))
+ '(fringe ((t (:background "black")))))
 (put 'narrow-to-region 'disabled nil)
 
 ;; Always use the default for find-tag
@@ -295,3 +307,7 @@
 
 ;; Undo for window rearranging
 (winner-mode 1)
+(put 'upcase-region 'disabled nil)
+
+;; Magit shortcut
+(global-set-key (kbd "C-M-g") 'magit-status)
