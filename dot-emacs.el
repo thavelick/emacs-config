@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(rvm robe exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection))
+(setq package-list '(rvm robe exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -38,13 +38,20 @@
 
 (add-hook 'php-mode-hook
           (function (lambda ()
-                      (setq php-indent-level 2
-                            php-continued-statement-offset 2
+                      (setq php-indent-level 4
+                            php-continued-statement-offset 4
                             php-continued-brace-offset 0
-                            php-brace-offset 2
+                            php-brace-offset 4
                             php-brace-imaginary-offset 0
-                            php-label-offset -2))))
+                            php-label-offset -4
+                            tab-width 4
+                            c-basic-offset 4
+                            indent-tabs-mode nil))))
 
+
+;; make C-M-forward jump between identifiers in python like it does for ruby and other languages.
+(add-hook 'python-mode-hook
+        (lambda () (setq forward-sexp-function nil)))
 
 ;; make speedbar show ruby files
 (eval-after-load "speedbar" '(speedbar-add-supported-extension ".rb"))
@@ -97,6 +104,7 @@
  '(cperl-indent-level 2)
  '(cperl-indent-parens-as-block t)
  '(cperl-tab-always-indent nil)
+ '(fill-column 100)
  '(org-support-shift-select (quote always)))
 
 ;; Use classic style indentation
@@ -317,3 +325,32 @@
           (function
            (lambda ()
              (org-indent-mode))))
+
+(add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
+
+;; Customized filter: don't mark *all* identifiers
+(defun amitp/rainbow-identifiers-filter (beg end)
+  "Only highlight standalone words or those following 'this.' or 'self.'"
+  (let ((curr-char (char-after beg))
+        (prev-char (char-before beg))
+        (prev-self (buffer-substring-no-properties
+                    (max (point-min) (- beg 1)) beg)))
+    (and (not (member curr-char
+                    '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ??)))
+         (or (not (equal prev-char ?\.))
+             (equal prev-self ".")))))
+
+;; Filter: don't mark identifiers inside comments or strings
+(setq rainbow-identifiers-faces-to-override
+      '(font-lock-type-face
+        font-lock-variable-name-face
+        font-lock-function-name-face))
+
+;; Set the filter
+(add-hook 'rainbow-identifiers-filter-functions 'amitp/rainbow-identifiers-filter)
+
+;; Use a wider set of colors
+(setq rainbow-identifiers-choose-face-function
+      'rainbow-identifiers-cie-l*a*b*-choose-face)
+(setq rainbow-identifiers-cie-l*a*b*-lightness 85)
+(setq rainbow-identifiers-cie-l*a*b*-saturation 35)
