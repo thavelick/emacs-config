@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(rvm robe exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers))
+(setq package-list '(rvm robe exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -47,7 +47,9 @@
                             tab-width 4
                             c-basic-offset 4
                             indent-tabs-mode nil))))
-
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (c-set-offset 'case-label '+)))
 
 ;; make C-M-forward jump between identifiers in python like it does for ruby and other languages.
 (add-hook 'python-mode-hook
@@ -96,6 +98,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(abbrev-mode t t)
+ '(c-offsets-alist (quote ((arglist-close . c-lineup-close-paren))))
  '(cperl-brace-offset -2)
  '(cperl-close-paren-offset -2)
  '(cperl-continued-statement-offset 2)
@@ -190,6 +193,21 @@
 ;;  )
 ;; From: https://gist.github.com/dgutov/1274520
 (defadvice ruby-indent-line (after unindent-closing-paren activate)
+  (let ((column (current-column))
+        indent offset)
+    (save-excursion
+      (back-to-indentation)
+      (let ((state (syntax-ppss)))
+        (setq offset (- column (current-column)))
+        (when (and (eq (char-after) ?\))
+                   (not (zerop (car state))))
+          (goto-char (cadr state))
+          (setq indent (current-indentation)))))
+    (when indent
+      (indent-line-to indent)
+      (when (> offset 0) (forward-char offset)))))
+
+(defadvice php-indent-line (after unindent-closing-paren activate)
   (let ((column (current-column))
         indent offset)
     (save-excursion
@@ -327,30 +345,21 @@
              (org-indent-mode))))
 
 (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
-
-;; Customized filter: don't mark *all* identifiers
-(defun amitp/rainbow-identifiers-filter (beg end)
-  "Only highlight standalone words or those following 'this.' or 'self.'"
-  (let ((curr-char (char-after beg))
-        (prev-char (char-before beg))
-        (prev-self (buffer-substring-no-properties
-                    (max (point-min) (- beg 1)) beg)))
-    (and (not (member curr-char
-                    '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ??)))
-         (or (not (equal prev-char ?\.))
-             (equal prev-self ".")))))
-
-;; Filter: don't mark identifiers inside comments or strings
-(setq rainbow-identifiers-faces-to-override
-      '(font-lock-type-face
-        font-lock-variable-name-face
-        font-lock-function-name-face))
-
-;; Set the filter
-(add-hook 'rainbow-identifiers-filter-functions 'amitp/rainbow-identifiers-filter)
-
-;; Use a wider set of colors
 (setq rainbow-identifiers-choose-face-function
       'rainbow-identifiers-cie-l*a*b*-choose-face)
 (setq rainbow-identifiers-cie-l*a*b*-lightness 85)
 (setq rainbow-identifiers-cie-l*a*b*-saturation 35)
+
+;; Add PHP filter_var to the current expression
+(defun insert-filter-var ()
+  "Inserts php code for filter_var.  Surrounds selected text if mark is set"
+  (interactive)
+  (let ((before (if (use-region-p) (region-beginning) (point)))
+    (after (if (use-region-p) (region-end) (point))))
+  (goto-char after)
+  (insert ", FILTER_SANITIZE_SPECIAL_CHARS)")
+  (goto-char before)
+  (insert "filter_var(")))
+
+;; When using dired, always open new folders in the same buffer
+(diredp-toggle-find-file-reuse-dir 1)
