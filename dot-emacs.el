@@ -277,8 +277,15 @@
 ;; Don't use messages that you don't read
 (setq initial-scratch-message "")
 (setq inhibit-startup-message t)
-;; Don't let Emacs hurt your ears
-(setq visible-bell t)
+;; Don't let Emacs hurt your ears, just change the mode line a bit
+ (defun my-terminal-visible-bell ()
+   "A friendlier visual bell effect."
+   (invert-face 'mode-line)
+   (run-with-timer 0.1 nil 'invert-face 'mode-line))
+
+ (setq visible-bell nil
+       ring-bell-function 'my-terminal-visible-bell)
+
 (if (display-graphic-p)
     (progn
      (scroll-bar-mode 0)
