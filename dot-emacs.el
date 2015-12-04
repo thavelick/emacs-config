@@ -6,12 +6,18 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(rvm robe exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+))
+(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider))
 
 (add-to-list 'package-archives
-  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+             '("tromey" . "http://tromey.com/elpa/") t)
 (add-to-list 'load-path (expand-file-name "~/elisp"))
 (add-to-list 'load-path (expand-file-name "~/elisp/iedit"))
+
+
 
 (package-initialize)
 
@@ -21,7 +27,6 @@
 (dolist (package package-list)
   (unless (package-installed-p package)
     (package-install package)))
-
 
 (require 'auto-install)
 
@@ -247,8 +252,6 @@
 (require 'flymake-ruby)
 (add-hook 'ruby-mode-hook 'flymake-ruby-load)
 
-;; ruby code navigation
-(add-hook 'ruby-mode-hook 'robe-mode)
 ;; Enable Multe selection
 (require 'iedit)
 
@@ -257,16 +260,6 @@
 (ruby-block-mode t)
 
 ;; Convert hashes between json and ruby
-
-(defun ruby-hash-to-json (&optional b e )
-  (interactive "r")
-  (shell-command-on-region b e (concat "/Users/tristan/.rvm/bin/ruby-1.9.3-p547 " (expand-file-name "~/elisp/") "hash_convert.rb" " --to-json") t t "*Error*" t)
-  (indent-region b e))
-
-(defun json-to-ruby-hash (&optional b e )
-  (interactive "r")
-  (shell-command-on-region b e (concat "/Users/tristan/.rvm/bin/ruby-1.9.3-p547 " (expand-file-name "~/elisp/") "hash_convert.rb" " --from-json") t t "*Error*" t) ;
-  (indent-region b e))
 
 (defun test-outline ()
   (interactive)
