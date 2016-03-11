@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2 auto-complete))
+(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2 auto-complete php-mode php-refactor-mode iedit))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.org/packages/") t)
@@ -15,7 +15,6 @@
 (add-to-list 'package-archives
              '("tromey" . "http://tromey.com/elpa/") t)
 (add-to-list 'load-path (expand-file-name "~/elisp"))
-(add-to-list 'load-path (expand-file-name "~/elisp/iedit"))
 
 
 
@@ -36,7 +35,8 @@
 (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
 (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
-(require 'php-mode)
+(add-hook 'php-mode-hook 'php-refactor-mode)
+
 
 (setq c-default-style "k&r"
           c-basic-offset 2)
@@ -345,7 +345,11 @@
 (setq rainbow-identifiers-cie-l*a*b*-lightness 85)
 (setq rainbow-identifiers-cie-l*a*b*-saturation 35)
 (setq rainbow-identifiers-faces-to-override
-      '(font-lock-variable-name-face))
+      '(font-lock-variable-name-face
+        js2-function-call
+        default
+        font-lock-function-name-face
+        font-lock-type-face))
 
 ;; Add PHP filter_var to the current expression
 (defun insert-filter-var ()
@@ -365,4 +369,4 @@
 (add-hook 'js2-mode-hook #'js2-refactor-mode)
 (add-hook 'js2-mode-hook 'ac-js2-mode)
 
-(js2r-add-keybindings-with-prefix "C-c C-r")
+(js2r-add-keybindings-with-prefix "C-c r")
