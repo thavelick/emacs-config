@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2))
+(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2 auto-complete))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.org/packages/") t)
@@ -116,10 +116,8 @@
 ;;(global-set-key (kbd "<tab>") '(indent-rigidly 2))
 ;;(global-set-key (kbd "S-<tab>") '(indent-rigidly -2))
 
-;; Add auto-complete
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 (ac-config-default)
+
 ;; make autocompletion case sensitive
 (setq-default ac-ignore-case nil)
 
@@ -391,6 +389,3 @@
 (add-hook 'js2-mode-hook 'ac-js2-mode)
 
 (js2r-add-keybindings-with-prefix "C-c C-r")
-
-;; remove yasnippet from autocomplete since it's causing issues and I don't use it
-(delq 'ac-source-yasnippet ac-sources)
