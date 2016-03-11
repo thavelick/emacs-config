@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider))
+(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.org/packages/") t)
@@ -42,6 +42,12 @@
           c-basic-offset 2)
 
 (add-hook 'php-mode-hook
+      '(lambda ()
+         (add-hook 'before-save-hook
+                   (lambda ()
+                     (untabify (point-min) (point-max))))))
+
+(add-hook 'php-mode-hook
           (function (lambda ()
                       (setq php-indent-level 4
                             php-continued-statement-offset 4
@@ -60,25 +66,6 @@
 (add-hook 'python-mode-hook
         (lambda () (setq forward-sexp-function nil)))
 
-;; make speedbar show ruby files
-(eval-after-load "speedbar" '(speedbar-add-supported-extension ".rb"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".feature"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".erb"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".ts"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".php"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".htm"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".htm"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".css"))
-(eval-after-load "speedbar" '(speedbar-add-supported-extension
-                              ".lua"))
-
 ;; [del] key deletes region
 (delete-selection-mode 1)
 
@@ -92,8 +79,17 @@
 (setq-default indent-tabs-mode nil)
 (setq tab-width 2)
 (setq-default tab-width 2)
-(setq js-indent-level 2)
+(setq js-indent-level 4)
 (setq css-indent-offset 2)
+(custom-set-variables
+ '(js2-basic-offset 4)
+ '(js2-bounce-indent-p nil)
+)
+
+(add-hook 'html-mode-hook
+        (lambda ()
+          ;; Default indentation is usually 2 spaces, changing to 4.
+          (set (make-local-variable 'sgml-basic-offset) 4)))
 
 ;; Use 2 space indents via cperl mode
 
@@ -113,7 +109,8 @@
  '(cperl-indent-parens-as-block t)
  '(cperl-tab-always-indent nil)
  '(fill-column 100)
- '(org-support-shift-select (quote always)))
+ '(org-support-shift-select (quote always))
+ '(undo-limit 800000))
 
 ;; Use classic style indentation
 ;;(global-set-key (kbd "<tab>") '(indent-rigidly 2))
@@ -344,6 +341,31 @@
            (lambda ()
              (org-indent-mode))))
 
+
+
+;; Customized filter: don't mark *all* identifiers
+(defun amitp/rainbow-identifiers-filter (beg end)
+  "Only highlight standalone words or those following 'this.' or 'self.'"
+  (let ((curr-char (char-after beg))
+        (prev-char (char-before beg))
+        (prev-self (buffer-substring-no-properties
+                    (max (point-min) (- beg 5)) beg)))
+    (and (not (member curr-char
+                    '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ??)))
+         (or (not (equal prev-char ?\.))
+             (equal prev-self "self.")
+             (equal prev-self "this.")))))
+
+;; Filter: don't mark identifiers inside comments or strings
+(setq rainbow-identifiers-faces-to-override
+      '(font-lock-type-face
+        font-lock-variable-name-face
+        font-lock-function-name-face))
+
+;; Set the filter
+(add-hook 'rainbow-identifiers-filter-functions 'amitp/rainbow-identifiers-filter)
+
+
 (add-hook 'prog-mode-hook 'rainbow-identifiers-mode)
 (setq rainbow-identifiers-choose-face-function
       'rainbow-identifiers-cie-l*a*b*-choose-face)
@@ -363,3 +385,12 @@
 
 ;; When using dired, always open new folders in the same buffer
 (diredp-toggle-find-file-reuse-dir 1)
+
+(add-to-list 'auto-mode-alist (cons (rx ".js" eos) 'js2-mode))
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(add-hook 'js2-mode-hook 'ac-js2-mode)
+
+(js2r-add-keybindings-with-prefix "C-c C-r")
+
+;; remove yasnippet from autocomplete since it's causing issues and I don't use it
+(delq 'ac-source-yasnippet ac-sources)
