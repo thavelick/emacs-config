@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2 auto-complete php-mode php-refactor-mode iedit))
+(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2 auto-complete php-mode php-refactor-mode iedit midnight))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.org/packages/") t)
@@ -27,7 +27,14 @@
   (unless (package-installed-p package)
     (package-install package)))
 
+
 (require 'auto-install)
+
+;; Settings
+(add-to-list 'load-path (expand-file-name "~/elisp/settings"))
+
+(require 'init-midnight)
+
 
 (setq x-select-enable-clipboard t)
 
@@ -36,6 +43,7 @@
 (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
 (add-hook 'php-mode-hook 'php-refactor-mode)
+
 
 
 (setq c-default-style "k&r"
@@ -99,6 +107,7 @@
  '(fill-column 100)
  '(js2-basic-offset 4)
  '(js2-bounce-indent-p nil)
+ '(magit-diff-arguments nil)
  '(org-support-shift-select (quote always))
  '(undo-limit 800000))
 
@@ -285,7 +294,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:background "black" :foreground "grey"))))
- '(fringe ((t (:background "black")))))
+ '(fringe ((t (:background "black"))))
+ '(js2-external-variable ((t (:foreground "tan")))))
 (put 'narrow-to-region 'disabled nil)
 
 ;; Always use the default for find-tag
@@ -347,6 +357,9 @@
 (setq rainbow-identifiers-faces-to-override
       '(font-lock-variable-name-face
         js2-function-call
+        js2-external-variable
+        js2-function-param
+        js2-object-property
         default
         font-lock-function-name-face
         font-lock-type-face))
@@ -370,3 +383,14 @@
 (add-hook 'js2-mode-hook 'ac-js2-mode)
 
 (js2r-add-keybindings-with-prefix "C-c r")
+
+
+;; add a function to kill all buffers
+(defun kill-other-buffers ()
+  "Kill all other buffers."
+  (interactive)
+  (mapc 'kill-buffer
+        (delq (current-buffer)
+              (remove-if-not 'buffer-file-name (buffer-list)))))
+;; save desktop on quit
+(desktop-save-mode 1)
