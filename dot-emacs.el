@@ -6,7 +6,7 @@
 (require 'package)
 
 ;; Fetch and install packaages
-(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ clojure-mode clojure-mode-extra-font-locking cider paredit js2-refactor ac-js2 auto-complete php-mode php-refactor-mode iedit midnight))
+(setq package-list '(exec-path-from-shell expand-region magit ag scss-mode feature-mode string-inflection geben rainbow-identifiers dired+ js2-refactor ac-js2 json-reformat auto-complete php-mode php-refactor-mode iedit midnight powershell jinja2-mode wgrep-ag browse-kill-ring csharp-mode csv-mode flycheck json-mode))
 
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.org/packages/") t)
@@ -50,12 +50,6 @@
           c-basic-offset 2)
 
 (add-hook 'php-mode-hook
-      '(lambda ()
-         (add-hook 'before-save-hook
-                   (lambda ()
-                     (untabify (point-min) (point-max))))))
-
-(add-hook 'php-mode-hook
           (function (lambda ()
                       (setq php-indent-level 4
                             php-continued-statement-offset 4
@@ -66,6 +60,8 @@
                             tab-width 4
                             c-basic-offset 4
                             indent-tabs-mode nil))))
+
+
 (add-hook 'c-mode-common-hook
           (lambda ()
             (c-set-offset 'case-label '+)))
@@ -105,11 +101,21 @@
  '(cperl-indent-parens-as-block t)
  '(cperl-tab-always-indent nil)
  '(fill-column 100)
- '(js2-basic-offset 4)
+ '(flyspell-auto-correct-binding [67108990])
+ '(js2-basic-offset 2)
  '(js2-bounce-indent-p nil)
  '(magit-diff-arguments nil)
  '(org-support-shift-select (quote always))
- '(undo-limit 800000))
+ '(scss-compile-at-save nil)
+ '(undo-limit 800000)
+ '(web-mode-code-indent-offset 2)
+ '(web-mode-css-indent-offset 2)
+ '(web-mode-markup-indent-offset 2))
+
+(add-hook 'java-mode-hook (lambda ()
+                            (setq c-basic-offset 4
+                                  tab-width 4
+                                  indent-tabs-mode nil)))
 
 (add-hook 'html-mode-hook
         (lambda ()
@@ -238,7 +244,12 @@
 (projectile-global-mode)
 
 ;; remove trailing whitespace on save
+
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; only untabify if we're in a proper mode
+(defun jlf-before-save-hook () (unless indent-tabs-mode (untabify (point-min) (point-max))))
+(add-hook 'before-save-hook 'jlf-before-save-hook)
 
 ;; make font size changes global
 (defadvice text-scale-increase (around all-buffers (arg) activate)
@@ -295,7 +306,7 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:background "black" :foreground "grey"))))
  '(fringe ((t (:background "black"))))
- '(js2-external-variable ((t (:foreground "tan")))))
+ '(js2-external-variable ((t (:underline t)))))
 (put 'narrow-to-region 'disabled nil)
 
 ;; Always use the default for find-tag
@@ -326,8 +337,8 @@
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; Make mac paths carry over to emacs shells
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+;; (when (memq window-system '(mac ns))
+;;  (exec-path-from-shell-initialize))
 
 ;; setup ag
 (when (executable-find "ag")
@@ -364,6 +375,11 @@
         font-lock-function-name-face
         font-lock-type-face))
 
+;; Add ksl ticket prefix
+(defun ksl ()
+  (interactive)
+  (insert "kingstreetlabs/KingStreetLabs#"))
+
 ;; Add PHP filter_var to the current expression
 (defun insert-filter-var ()
   "Inserts php code for filter_var.  Surrounds selected text if mark is set"
@@ -394,3 +410,41 @@
               (remove-if-not 'buffer-file-name (buffer-list)))))
 ;; save desktop on quit
 (desktop-save-mode 1)
+
+
+(defun insert-date ()
+    "Inserts standard date time string."
+    (interactive)
+    (insert (format-time-string "%c")))
+
+
+;; use web-mode for .jsx files
+(add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+
+;; http://www.flycheck.org/manual/latest/index.html
+(require 'flycheck)
+
+;; turn on flychecking globally
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+;; disable jshint since we prefer eslint checking
+(setq-default flycheck-disabled-checkers
+  (append flycheck-disabled-checkers
+    '(javascript-jshint)))
+
+;; use eslint with web-mode for jsx files
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+
+;; customize flycheck temp file prefix
+(setq-default flycheck-temp-prefix ".flycheck")
+
+;; disable json-jsonlist checking for json files
+(setq-default flycheck-disabled-checkers
+  (append flycheck-disabled-checkers
+    '(json-jsonlist)))
+
+;; https://github.com/purcell/exec-path-from-shell
+;; only need exec-path-from-shell on OSX
+;; this hopefully sets up path and other vars better
+;; (when (memq window-system '(mac ns))
+;; (exec-path-from-shell-initialize))
